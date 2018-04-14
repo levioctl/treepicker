@@ -84,10 +84,6 @@ class OptionPickerByMenuTraverse(OptionPicker):
         if nr_options_to_pick == 1:
             cursesswitch.print_string('Please choose a directory to sync')
             options = picker.pick_one()
-            if options is None:
-                options = None
-            else:
-                options = options[0]
         elif nr_options_to_pick == 2:
             cursesswitch.print_string('Please choose 2 directories to sync')
             options = picker.pick()

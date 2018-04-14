@@ -31,7 +31,7 @@ class TreePicker(object):
 
     def pick_one(self):
         choices = self.pick()
-        return None if not choices else choices[0]
+        return None if not choices else choices
 
     def pick(self):
         print_tree_once = True
