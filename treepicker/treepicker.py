@@ -19,7 +19,7 @@ class TreePicker(object):
     def __init__(self, tree, including_root=True, header="", max_nr_lines=None, min_nr_options=1,
                  max_nr_options=None):
         self._picker = treepickermodel.TreePickerModel(tree, header, max_nr_lines, min_nr_options=min_nr_options,
-                                                       max_nr_options=max_nr_lines)
+                                                       max_nr_options=max_nr_options)
         self._header = (header + '\n' + self.BUILTIN_HEADER).strip()
         self._line_scanner = linescanner.LineScanner()
         self._navigation_actions = keybind.KeyBind()
@@ -94,7 +94,7 @@ class TreePicker(object):
         selected_node = self._picker.get_selected_node()
         search_pattern = self._line_scanner.get_line()
         picked = self._picker.get_picked_nodes()
-        self._tree_printer.calculate_lines_to_print(selected_node, picked, search_pattern)
+        self._tree_printer.calculate_lines_to_print(selected_node.identifier, picked, search_pattern)
         printer.clear_screen()
         if self._header is not None:
             printer.print_string(self._header + "\n")
@@ -156,7 +156,7 @@ class TreePicker(object):
     def _capture_state(self):
         picked = self._picker.get_picked_nodes()
         picked = hash(str(picked.keys()))
-        return (picked, self._picker.get_selected_node(), self._mode)
+        return (picked, self._picker.get_selected_node().identifier, self._mode)
 
     @staticmethod
     def _get_node_data(node):
@@ -165,5 +165,5 @@ class TreePicker(object):
 
 if __name__ == '__main__':
     from exampletree import tree
-    treepicker = TreePicker(tree, header='stuff:', max_nr_lines=25)
+    treepicker = TreePicker(tree, header='stuff:')
     cursesswitch.wrapper(treepicker.pick)

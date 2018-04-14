@@ -83,11 +83,11 @@ class OptionPickerByMenuTraverse(OptionPicker):
         picker = treepicker.TreePicker(tree, max_nr_lines=15, including_root=False, max_nr_options=1)
         if nr_options_to_pick == 1:
             cursesswitch.print_string('Please choose a directory to sync')
-            option_idx = picker.pick_one()
-            if option_idx is None:
+            options = picker.pick_one()
+            if options is None:
                 options = None
             else:
-                options = [self._options[option_idx]]
+                options = options[0]
         elif nr_options_to_pick == 2:
             cursesswitch.print_string('Please choose 2 directories to sync')
             options = picker.pick()
@@ -96,4 +96,4 @@ class OptionPickerByMenuTraverse(OptionPicker):
 
 if __name__ == "__main__":
     picker = OptionPickerByMenuTraverse(['first', 'second', 'third'])
-    cursesswitch.wrapper(picker.pick_one)
+    picker.pick_one()

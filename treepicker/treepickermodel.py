@@ -68,8 +68,7 @@ class TreePickerModel(object):
 
     def toggle(self):
         self._validate_navigator_tree()
-        selected_node_nid = self._tree_navigator.get_selected_node()
-        selected_node = self._tree.get_node(selected_node_nid)
+        selected_node = self._tree_navigator.get_selected_node()
         # No toggle with only one option
         if self._min_nr_options == self._max_nr_options == 1:
             return
@@ -83,8 +82,8 @@ class TreePickerModel(object):
         self._validate_navigator_tree()
         picked = dict()
         if self._min_nr_options == self._max_nr_options == 1:
-            selected_node_nid = self._tree_navigator.get_selected_node()
-            self._picked = {selected_node_nid: self._tree.get_node(selected_node_nid)}
+            selected_node = self._tree_navigator.get_selected_node()
+            self._picked = {selected_node: selected_node}
             picked = self._picked
         elif self._min_nr_options <= len(self._picked) <= self._max_nr_options:
             picked = self._picked
@@ -113,7 +112,8 @@ class TreePickerModel(object):
             self._tree_navigator.set_tree(tree)
 
     def _pick_node(self, node):
-        self._picked[node.identifier] = node
+        if len(self._picked) < self._max_nr_options:
+            self._picked[node.identifier] = node
 
     def _unpick_node(self, node):
         if node.identifier in self._picked:

@@ -9,7 +9,7 @@ class TreeNavigator(object):
     def get_selected_node(self):
         if self._selected_node is None:
             return None
-        return self._selected_node.identifier
+        return self._selected_node
 
     DIRECTION_NEXT = 1
     DIRECTION_PREV = 2
