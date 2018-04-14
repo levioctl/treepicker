@@ -1,5 +1,3 @@
-import os
-
 import keybind
 import linescanner
 import treeprinter
@@ -18,8 +16,10 @@ class TreePicker(object):
     BUILTIN_HEADER = ("Navigation: [Ctrl+]h,j,k,l, First: g, Last: G, Search: /, Non-interactive search: Ctrl+/, "
                       "Quit: q")
 
-    def __init__(self, tree, including_root=True, header="", max_nr_lines=None):
-        self._picker = treepickermodel.TreePickerModel(tree, header, max_nr_lines)
+    def __init__(self, tree, including_root=True, header="", max_nr_lines=None, min_nr_options=1,
+                 max_nr_options=None):
+        self._picker = treepickermodel.TreePickerModel(tree, header, max_nr_lines, min_nr_options=min_nr_options,
+                                                       max_nr_options=max_nr_lines)
         self._header = (header + '\n' + self.BUILTIN_HEADER).strip()
         self._line_scanner = linescanner.LineScanner()
         self._navigation_actions = keybind.KeyBind()
@@ -27,6 +27,7 @@ class TreePicker(object):
         self._populate_keybind()
         self._tree_printer = treeprinter.TreePrinter(tree, max_nr_lines, including_root=including_root)
         self._mode = self._MODE_NAVIGATION
+        self._picked_node_will_be_selected_node = min_nr_options == max_nr_options == 1
 
     def pick_one(self):
         choices = self.pick()
@@ -55,8 +56,11 @@ class TreePicker(object):
                 if result == linescanner.LineScanner.STATE_EDIT_ENDED:
                     self._mode = self._MODE_NAVIGATION
             elif self._mode == self._MODE_RETURN:
-                picked = self._picker.get_picked_nodes()
-                picked = [self._get_node_data(node) for node in picked.values()]
+                if self._picked_node_will_be_selected_node:
+                    picked = [self._get_node_data(self._picker.get_selected_node())]
+                else:
+                    picked = self._picker.get_picked_nodes()
+                    picked = [self._get_node_data(node) for node in picked.values()]
             elif self._mode == self._MODE_QUIT:
                 picked = list()
             else:
@@ -79,7 +83,7 @@ class TreePicker(object):
 
     def return_picked_nodes(self):
         picked = self._picker.get_picked_nodes()
-        if picked:
+        if picked or self._picked_node_will_be_selected_node:
             self._mode = self._MODE_RETURN
 
     def _update_search_pattern(self):
@@ -90,7 +94,6 @@ class TreePicker(object):
         selected_node = self._picker.get_selected_node()
         search_pattern = self._line_scanner.get_line()
         picked = self._picker.get_picked_nodes()
-        print len(picked)
         self._tree_printer.calculate_lines_to_print(selected_node, picked, search_pattern)
         printer.clear_screen()
         if self._header is not None:
@@ -157,7 +160,7 @@ class TreePicker(object):
 
     @staticmethod
     def _get_node_data(node):
-        return node.data if hasattr(node, 'data') else node.tag
+        return node.data if hasattr(node, 'data') else node
 
 
 if __name__ == '__main__':
